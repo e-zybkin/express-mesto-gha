@@ -7,14 +7,18 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      let errorMessage = 'В следующих полях введены неверные данные: ';
-      const errorValues = Object.values(err.errors);
-      errorValues.forEach((errVal) => {
-        if (typeof errVal === 'object') {
-          errorMessage += `${errVal.path}, `;
-        }
-      });
-      res.status(400).send({ message: errorMessage });
+      if (err.name === 'ValidationError') {
+        let errorMessage = 'В следующих полях введены неверные данные: ';
+        const errorValues = Object.values(err.errors);
+        errorValues.forEach((errVal) => {
+          if (typeof errVal === 'object') {
+            errorMessage += `${errVal.path}, `;
+          }
+        });
+        res.status(400).send({ message: errorMessage });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
     });
 };
 
@@ -35,6 +39,8 @@ module.exports.getUserById = (req, res) => {
         res.status(404).send({ message: err.errorMessage });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Неверно введён ID' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
     });
 };
