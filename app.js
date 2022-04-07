@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
@@ -13,8 +12,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, '/public')));
-
 app.use((req, res, next) => {
   req.user = {
     _id: '624d6fa3426179b2adcf06ba',
@@ -22,6 +19,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use(express.json());
 
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);

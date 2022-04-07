@@ -8,14 +8,18 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      let errorMessage = 'В следующих полях введены неверные данные: ';
-      const errorValues = Object.values(err.errors);
-      errorValues.forEach((errVal) => {
-        if (typeof errVal === 'object') {
-          errorMessage += `${errVal.path}, `;
-        }
-      });
-      res.status(400).send({ message: errorMessage });
+      if (err.name === 'ValidationError') {
+        let errorMessage = 'В следующих полях введены неверные данные: ';
+        const errorValues = Object.values(err.errors);
+        errorValues.forEach((errVal) => {
+          if (typeof errVal === 'object') {
+            errorMessage += `${errVal.path}, `;
+          }
+        });
+        res.status(400).send({ message: errorMessage });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
     });
 };
 
@@ -36,6 +40,8 @@ module.exports.delCardById = (req, res) => {
         res.status(404).send({ message: err.errorMessage });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Неверно введён ID' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
     });
 };
