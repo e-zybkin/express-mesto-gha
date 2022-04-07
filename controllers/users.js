@@ -33,8 +33,8 @@ module.exports.getUserById = (req, res) => {
     .catch((err) => {
       if (err.statusCode === 404) {
         res.status(404).send({ message: err.errorMessage });
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Неверно введён ID' });
       }
     });
 };
