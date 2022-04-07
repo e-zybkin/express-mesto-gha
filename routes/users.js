@@ -14,8 +14,8 @@ usersRoutes.get('/:userId', getUserById);
 
 usersRoutes.post('/', express.json(), createUser);
 
-usersRoutes.patch('/me', updProfile);
+usersRoutes.patch('/me', express.json(), updProfile);
 
-usersRoutes.patch('/me/avatar', updAvatar);
+usersRoutes.patch('/me/avatar', express.json(), updAvatar);
 
 module.exports = usersRoutes;

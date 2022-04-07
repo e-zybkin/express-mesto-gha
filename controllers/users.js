@@ -1,23 +1,42 @@
 const User = require('../models/user');
+const ErrorNotFound = require('../errors/ErrorNotFound');
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      let errorMessage = 'В следующих полях введены неверные данные: ';
+      const errorValues = Object.values(err.errors);
+      errorValues.forEach((errVal) => {
+        if (typeof errVal === 'object') {
+          errorMessage += `${errVal.path}, `;
+        }
+      });
+      res.status(400).send({ message: errorMessage });
+    });
 };
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then(users => res.send({ data: users }))
+    .then((users) => res.send({ data: users }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .orFail(() => {
+      throw new ErrorNotFound('Пользователя с таким ID не существует');
+    })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.statusCode === 404) {
+        res.status(404).send({ message: err.errorMessage });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.updProfile = (req, res) => {
@@ -26,10 +45,31 @@ module.exports.updProfile = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true },
+    {
+      new: true,
+      runValidators: true,
+    },
   )
-    .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .orFail(() => {
+      throw new ErrorNotFound('Пользователя с таким ID не существует');
+    })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.statusCode === 404) {
+        res.status(404).send({ message: err.errorMessage });
+      } else if (err.name === 'ValidationError') {
+        let errorMessage = 'В следующих полях введены неверные данные: ';
+        const errorValues = Object.values(err.errors);
+        errorValues.forEach((errVal) => {
+          if (typeof errVal === 'object') {
+            errorMessage += `${errVal.path}, `;
+          }
+        });
+        res.status(400).send({ message: errorMessage });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.updAvatar = (req, res) => {
@@ -38,8 +78,29 @@ module.exports.updAvatar = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true },
+    {
+      new: true,
+      runValidators: true,
+    },
   )
-    .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .orFail(() => {
+      throw new ErrorNotFound('Пользователя с таким ID не существует');
+    })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.statusCode === 404) {
+        res.status(404).send({ message: err.errorMessage });
+      } else if (err.name === 'ValidationError') {
+        let errorMessage = 'В следующих полях введены неверные данные: ';
+        const errorValues = Object.values(err.errors);
+        errorValues.forEach((errVal) => {
+          if (typeof errVal === 'object') {
+            errorMessage += `${errVal.path}, `;
+          }
+        });
+        res.status(400).send({ message: errorMessage });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
