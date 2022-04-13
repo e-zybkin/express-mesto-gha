@@ -18,8 +18,8 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-app.post('/signin', login);
-app.post('/signup', validations.regAndUpd, createUser);
+app.post('/signin', validations.log, login);
+app.post('/signup', validations.reg, createUser);
 
 app.use(auth);
 

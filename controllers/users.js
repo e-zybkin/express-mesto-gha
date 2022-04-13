@@ -119,16 +119,5 @@ module.exports.updAvatar = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       next(err);
-
-      /*if (err.name === 'ValidationError') {
-        let errorMessage = 'В следующих полях введены неверные данные: ';
-        const errorValues = Object.values(err.errors);
-        errorValues.forEach((errVal) => {
-          if (typeof errVal === 'object') {
-            errorMessage += `${errVal.path}, `;
-          }
-        });
-        res.status(400).send({ message: errorMessage });
-      } */
     });
 };

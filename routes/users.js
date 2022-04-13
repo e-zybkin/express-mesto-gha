@@ -14,8 +14,8 @@ usersRoutes.get('/me', getUserInfo);
 
 usersRoutes.get('/:userId', validations.checkUserId, getUserById);
 
-usersRoutes.patch('/me', validations.regAndUpd, updProfile);
+usersRoutes.patch('/me', validations.updateProf, updProfile);
 
-usersRoutes.patch('/me/avatar', updAvatar);
+usersRoutes.patch('/me/avatar', validations.updateAva, updAvatar);
 
 module.exports = usersRoutes;
