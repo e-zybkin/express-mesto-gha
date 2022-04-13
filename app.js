@@ -1,7 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const {
+  errors,
+} = require('celebrate');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
+const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
+const errorHandler = require('./middlewares/errorHandler');
+const validations = require('./middlewares/validations');
 
 const { PORT = 3000 } = process.env;
 
@@ -12,15 +19,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '624d6fa3426179b2adcf06ba',
-  };
-
-  next();
-});
-
 app.use(express.json());
+
+app.post('/signin', login);
+app.post('/signup', validations.register, createUser);
+
+app.use(auth);
 
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
@@ -30,6 +34,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use(errorHandler);
 
 async function main() {
   await mongoose.connect('mongodb://localhost:27017/mestodb');
