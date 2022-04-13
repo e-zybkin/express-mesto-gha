@@ -10,12 +10,12 @@ const validations = require('../middlewares/validations');
 
 cardsRoutes.get('/', getCards);
 
-cardsRoutes.post('/', createCard);
+cardsRoutes.post('/', validations.makeCard, createCard);
 
-cardsRoutes.delete('/:cardId', delCardById);
+cardsRoutes.delete('/:cardId', validations.checkCardId, delCardById);
 
-cardsRoutes.put('/:cardId/likes', likeCard);
+cardsRoutes.put('/:cardId/likes', validations.checkCardId, likeCard);
 
-cardsRoutes.delete('/:cardId/likes', dislikeCard);
+cardsRoutes.delete('/:cardId/likes', validations.checkCardId, dislikeCard);
 
 module.exports = cardsRoutes;

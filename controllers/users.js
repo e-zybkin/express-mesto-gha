@@ -32,17 +32,6 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       next(err);
-
-      /*if (err.name === 'ValidationError') {
-        let errorMessage = 'В следующих полях введены неверные данные: ';
-        const errorValues = Object.values(err.errors);
-        errorValues.forEach((errVal) => {
-          if (typeof errVal === 'object') {
-            errorMessage += `${errVal.path}, `;
-          }
-        });
-        res.status(400).send({ message: errorMessage });
-      }*/
     });
 };
 
@@ -81,17 +70,15 @@ module.exports.getUserInfo = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
-  User.findById(req.params.userId)
+  const { userId } = req.params;
+
+  return User.findById(userId)
     .orFail(() => {
       throw new ErrorNotFound('Пользователя с таким ID не существует');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       next(err);
-
-      /*if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Неверно введён ID' });
-      }*/
     });
 };
 
@@ -112,17 +99,6 @@ module.exports.updProfile = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       next(err);
-
-      /*if (err.name === 'ValidationError') {
-        let errorMessage = 'В следующих полях введены неверные данные: ';
-        const errorValues = Object.values(err.errors);
-        errorValues.forEach((errVal) => {
-          if (typeof errVal === 'object') {
-            errorMessage += `${errVal.path}, `;
-          }
-        });
-        res.status(400).send({ message: errorMessage });
-      }*/
     });
 };
 

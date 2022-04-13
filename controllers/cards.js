@@ -10,17 +10,6 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       next(err);
-
-      /*if (err.name === 'ValidationError') {
-        let errorMessage = 'В следующих полях введены неверные данные: ';
-        const errorValues = Object.values(err.errors);
-        errorValues.forEach((errVal) => {
-          if (typeof errVal === 'object') {
-            errorMessage += `${errVal.path}, `;
-          }
-        });
-        res.status(400).send({ message: errorMessage });
-      }*/
     });
 };
 
@@ -33,7 +22,8 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.delCardById = (req, res, next) => {
-  Card.findById(req.params.cardId)
+  const { cardId } = req.params;
+  Card.findById(cardId)
     .orFail(() => {
       throw new ErrorNotFound('Карточки с таким ID не существует');
     })
@@ -41,21 +31,18 @@ module.exports.delCardById = (req, res, next) => {
       if (card.owner.toString() !== req.user._id) {
         throw new ErrorForbidden('Вы не можете удалять чужие карточки');
       }
-      Card.findByIdAndRemove(req.params.cardId)
-        .then((card) => res.send({ data: card }))
-        .catch((err) => {
-          next(err);
-
-          /*if (err.name === 'CastError') {
-            res.status(400).send({ message: 'Неверно введён ID' });
-          }*/
-        });
+      Card.findByIdAndRemove(cardId)
+        .then((card) => res.send({ data: card }));
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
 module.exports.likeCard = (req, res, next) => {
+  const { cardId } = req.params;
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
@@ -65,16 +52,13 @@ module.exports.likeCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       next(err);
-
-      /*if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Неверно введён ID' });
-      }*/
     });
 };
 
 module.exports.dislikeCard = (req, res, next) => {
+  const { cardId } = req.params;
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
@@ -84,9 +68,5 @@ module.exports.dislikeCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       next(err);
-
-      /*if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Неверно введён ID' });
-      }*/
     });
 };

@@ -12,9 +12,9 @@ usersRoutes.get('/', getUsers);
 
 usersRoutes.get('/me', getUserInfo);
 
-usersRoutes.get('/:userId', getUserById);
+usersRoutes.get('/:userId', validations.checkUserId, getUserById);
 
-usersRoutes.patch('/me', updProfile);
+usersRoutes.patch('/me', validations.regAndUpd, updProfile);
 
 usersRoutes.patch('/me/avatar', updAvatar);
 

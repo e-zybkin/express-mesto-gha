@@ -1,8 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const {
-  errors,
-} = require('celebrate');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
@@ -22,7 +19,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.post('/signin', login);
-app.post('/signup', validations.register, createUser);
+app.post('/signup', validations.regAndUpd, createUser);
 
 app.use(auth);
 
