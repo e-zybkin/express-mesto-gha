@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ErrorNotFound = require('../errors/ErrorNotFound');
 const ErrorConflict = require('../errors/ErrorConflict');
+const ErrorValidation = require('../errors/ErrorValidation');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -31,7 +32,11 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => User.findOne({ _id: user._id }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      next(err);
+      if (err.name === 'ValidationError') {
+        next(new ErrorValidation('Переданы невалидные данные'));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -98,7 +103,11 @@ module.exports.updProfile = (req, res, next) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      next(err);
+      if (err.name === 'ValidationError') {
+        next(new ErrorValidation('Переданы невалидные данные'));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -118,6 +127,10 @@ module.exports.updAvatar = (req, res, next) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      next(err);
+      if (err.name === 'ValidationError') {
+        next(new ErrorValidation('Переданы невалидные данные'));
+      } else {
+        next(err);
+      }
     });
 };

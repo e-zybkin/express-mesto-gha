@@ -6,6 +6,7 @@ const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
 const validations = require('./middlewares/validations');
+const ErrorNotFound = require('./errors/ErrorNotFound');
 
 const { PORT = 3000 } = process.env;
 
@@ -27,9 +28,7 @@ app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 
 app.use((req, res, next) => {
-  res.status(404).send({ message: 'Упс, а такого у нас нету!' });
-
-  next();
+  next(new ErrorNotFound('Упс, а такого у нас нету!'));
 });
 
 app.use(errorHandler);
