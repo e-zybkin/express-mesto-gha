@@ -36,11 +36,10 @@ const reg = celebrate({
       'any.required': 'Email не указан',
       'string.notEmail': 'Email некорректен',
     }),
-    password: Joi.string().required().min(8).messages({
+    password: Joi.string().required().messages({
       'any.required': 'Пароль не указан',
-      'string.min': 'Пароль должен быть не короче 8 символов',
     }),
-  }).unknown(true),
+  }),
 });
 
 const log = celebrate({
@@ -55,9 +54,8 @@ const log = celebrate({
       'any.required': 'Email не указан',
       'string.notEmail': 'Email некорректен',
     }),
-    password: Joi.string().required().min(8).messages({
+    password: Joi.string().required().messages({
       'any.required': 'Пароль не указан',
-      'string.min': 'Пароль должен быть не короче 8 символов',
     }),
   }),
 });
