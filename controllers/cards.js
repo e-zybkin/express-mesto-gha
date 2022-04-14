@@ -32,7 +32,7 @@ module.exports.delCardById = (req, res, next) => {
         throw new ErrorForbidden('Вы не можете удалять чужие карточки');
       }
       Card.findByIdAndRemove(cardId)
-        .then((card) => res.send({ data: card }));
+        .then(() => res.send({ data: card }));
     })
     .catch((err) => {
       next(err);
